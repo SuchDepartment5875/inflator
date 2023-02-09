@@ -1,0 +1,29 @@
+{
+  "name": "@inflator/backend",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "jest -c jest.unit.config.js",
+    "import-raw-data": "AWS_PROFILE=james-nonprod ts-node src/utils/adapt-csv.ts",
+    "deploy": "serverless deploy",
+    "deploy:prod": "npm run build && ENVIRONMENT=prod AWS_DEFAULT_REGION=eu-west-1 serverless deploy --aws-profile james-prod",
+    "deploy:nonprod": "npm run build && ENVIRONMENT=nonprod AWS_DEFAULT_REGION=eu-west-1 serverless deploy --aws-profile james-nonprod",
+    "init-tf:nonprod": "AWS_PROFILE=james-nonprod terraform init -backend-config variables/nonprod-backend-config.tfvars",
+    "init-tf:prod": "AWS_PROFILE=james-prod terraform init -backend-config variables/prod-backend-config.tfvars",
+    "deploy-tf:nonprod": "npm run init-tf:nonprod && AWS_PROFILE=james-nonprod TF_VAR_DOMAIN_NAME=nonprod-inflator.co.uk terraform apply -var-file=variables/nonprod.tfvars",
+    "deploy-tf:prod": "npm run init-tf:prod && AWS_PROFILE=james-prod TF_VAR_DOMAIN_NAME=inflator.co.uk terraform apply -var-file=variables/prod.tfvars",
+    "start-serverless-offline": "ENVIRONMENT=${ENVIRONMENT:-development} AWS_DEFAULT_REGION=eu-west-1 serverless offline --httpPort 3001",
+    "start": "ENVIRONMENT=nonprod nodemon -e ts --exec \" npm run build && npm run start-serverless-offline \"",
+    "build": "node ./esbuild.js",
+    "start-express": "concurrently \"npx tsc --watch\" \"AWS_PROFILE=james-nonprod S3_BUCKET_NAME=inflator-data-bucket-nonprod nodemon -q dist/packages/backend/local-server.js\""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "express": "4.18.2",
+    "esbuild": "^0.15.5",
+    "serverless-s3-local": "^0.6.22"
+  }
+}

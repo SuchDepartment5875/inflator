@@ -1,0 +1,219 @@
+version: 2.1
+
+aliases:
+  - &only-main
+    filters:
+      branches:
+        only:
+          - main
+  - &never-main
+    filters:
+      branches:
+        ignore:
+          - main
+
+jobs:
+  install_dependencies:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - run:
+          name: yarn install
+          command: yarn install
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+
+  test_ui:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: test-ui
+          command: yarn run test-ui
+
+  test_api:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: test-api
+          command: yarn run test-api
+
+  deploy_core_infra:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: terraform init & plan
+          command: |
+            cd packages/core-infra/
+            terraform init -backend-config variables/$ENVIRONMENT-backend-config.tfvars -input=false
+            terraform apply -var-file=variables/$ENVIRONMENT.tfvars -auto-approve
+
+  deploy_ui:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: deploy-ui
+          command: |
+            cd packages/frontend/
+            terraform init -backend-config variables/$ENVIRONMENT-backend-config.tfvars -input=false
+            terraform apply -var-file=variables/$ENVIRONMENT.tfvars -auto-approve
+            export AWS_RUM_ID=$(aws ssm get-parameter --name "/$TF_VAR_DOMAIN_NAME/rum/app_monitor_id" --query Parameter.Value --output=text)
+            export AWS_RUM_GUEST_ROLE_ARN=$(aws ssm get-parameter --name "/$TF_VAR_DOMAIN_NAME/rum/guest_role_arn" --query Parameter.Value --output=text)
+            export AWS_RUM_IDENTITY_POOL_ID=$(aws ssm get-parameter --name "/$TF_VAR_DOMAIN_NAME/rum/identity_pool_id" --query Parameter.Value --output=text)
+            yarn run deploy
+
+  deploy_api_tf:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: terraform init & plan
+          command: |
+            cd packages/backend/
+            terraform init -backend-config variables/$ENVIRONMENT-backend-config.tfvars -input=false
+            terraform apply -var-file=variables/$ENVIRONMENT.tfvars -auto-approve
+
+  deploy_api:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: deploy-api
+          command: yarn run deploy-api
+
+  build_api:
+    docker:
+      - image: jrdavenport/aws-node-terraform:latest
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: deploy-api
+          command: yarn run build-api
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+
+workflows:
+  deploy:
+    jobs:
+      - install_dependencies
+      # NONPROD
+      - build_api:
+          name: build_api_nonprod
+          requires:
+            - install_dependencies
+          context: inflator-nonprod
+          <<: *never-main
+      - test_ui:
+          name: test_ui_nonprod
+          requires:
+            - install_dependencies
+          context: inflator-nonprod
+          <<: *never-main
+      - test_api:
+          name: test_api_nonprod
+          requires:
+            - install_dependencies
+          context: inflator-nonprod
+          <<: *never-main
+      - deploy_core_infra:
+          name: deploy_core_infra_nonprod
+          context: inflator-nonprod
+          <<: *never-main
+      - deploy_ui:
+          name: deploy_ui_nonprod
+          requires:
+            - deploy_core_infra_nonprod
+            - test_ui_nonprod
+          context: inflator-nonprod
+          <<: *never-main
+      - deploy_api_tf:
+          name: deploy_api_tf_nonprod
+          requires:
+            - deploy_core_infra_nonprod
+            - build_api_nonprod
+            - test_api_nonprod
+          context: inflator-nonprod
+          <<: *never-main
+      - deploy_api:
+          name: deploy_api_nonprod
+          requires:
+            - deploy_core_infra_nonprod
+            - build_api_nonprod
+            - test_api_nonprod
+          context: inflator-nonprod
+          <<: *never-main
+      # PROD
+      - build_api:
+          name: build_api_prod
+          requires:
+            - install_dependencies
+          context: inflator-prod
+          <<: *only-main
+      - test_ui:
+          name: test_ui_prod
+          requires:
+            - install_dependencies
+          context: inflator-prod
+          <<: *only-main
+      - test_api:
+          name: test_api_prod
+          requires:
+            - install_dependencies
+          context: inflator-prod
+          <<: *only-main
+      - deploy_core_infra:
+          name: deploy_core_infra_prod
+          requires:
+            - install_dependencies
+          context: inflator-prod
+          <<: *only-main
+      - deploy_ui:
+          name: deploy_ui_prod
+          requires:
+            - deploy_core_infra_prod
+            - test_ui_prod
+          context: inflator-prod
+          <<: *only-main
+      - deploy_api_tf:
+          name: deploy_api_tf_prod
+          requires:
+            - deploy_core_infra_prod
+            - build_api_prod
+            - test_api_prod
+          context: inflator-prod
+          <<: *only-main
+      - deploy_api:
+          name: deploy_api_prod
+          requires:
+            - deploy_core_infra_prod
+            - build_api_prod
+            - test_api_prod
+          context: inflator-prod
+          <<: *only-main
+# VS Code Extension Version: 1.5.1

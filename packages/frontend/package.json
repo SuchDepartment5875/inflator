@@ -1,0 +1,37 @@
+{
+  "name": "@inflator/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "PORT=4000 REACT_APP_ENVIRONMENT=${ENVIRONMENT:-development} HOST=0.0.0.0 react-scripts start",
+    "build": "echo $ENVIRONMENT && REACT_APP_ENVIRONMENT=${ENVIRONMENT:-development} react-scripts build",
+    "deploy": "REACT_APP_AWS_RUM_ID=$AWS_RUM_ID REACT_APP_AWS_RUM_GUEST_ROLE_ARN=$AWS_RUM_GUEST_ROLE_ARN REACT_APP_AWS_RUM_IDENTITY_POOL_ID=$AWS_RUM_IDENTITY_POOL_ID npm run build && aws s3 sync build/ s3://www.$TF_VAR_DOMAIN_NAME",
+    "deploy-local": "REACT_APP_AWS_RUM_ID=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/app_monitor_id\" --query Parameter.Value) REACT_APP_AWS_RUM_GUEST_ROLE_ARN=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/guest_role_arn\" --query Parameter.Value) REACT_APP_AWS_RUM_IDENTITY_POOL_ID=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/identity_pool_id\" --query Parameter.Value) npm run build && AWS_PROFILE=james-prod aws s3 sync build/ s3://$TF_VAR_DOMAIN_NAME",
+    "test": "REACT_APP_ENVIRONMENT=prod react-scripts test",
+    "eject": "react-scripts eject",
+    "init-tf:nonprod": "AWS_PROFILE=james-nonprod terraform init -backend-config variables/nonprod-backend-config.tfvars",
+    "init-tf:prod": "AWS_PROFILE=james-prod terraform init -backend-config variables/prod-backend-config.tfvars",
+    "deploy-tf:nonprod": "npm run init-tf:nonprod && AWS_PROFILE=james-nonprod terraform apply -var-file=variables/nonprod.tfvars",
+    "deploy-tf:prod": "npm run init-tf:prod && AWS_PROFILE=james-prod TF_VAR_DOMAIN_NAME=inflator.co.uk terraform apply -var-file=variables/prod.tfvars",
+    "deploy-ui:nonprod": "REACT_APP_AWS_RUM_ID=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk-rum-ui-app_monitor_id\" --query Parameter.Value --profile=james-nonprod --output=text) npm run build && AWS_PROFILE=james-nonprod aws s3 sync build/ s3://www.nonprod-inflator.co.uk",
+    "deploy-ui:prod": "npm run init-tf:prod && AWS_PROFILE=james-prod TF_VAR_DOMAIN_NAME=inflator.co.uk terraform apply -var-file=variables/prod.tfvars"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

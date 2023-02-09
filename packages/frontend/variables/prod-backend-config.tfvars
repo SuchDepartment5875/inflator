@@ -1,0 +1,1 @@
+bucket = "inflator-tf-prod-frontend"

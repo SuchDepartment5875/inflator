@@ -1,0 +1,5 @@
+CORE_BUCKET = "inflator-tf-backend-nonprod"
+BACKEND_DATA_BUCKET_NAME = "inflator-data-bucket-nonprod"
+ENV = "nonprod"
+DOMAIN_NAME = "nonprod-inflator.co.uk"
+# ui_hosting_bucket = "nonprod.inflator.co.uk"

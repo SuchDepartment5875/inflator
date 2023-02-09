@@ -1,0 +1,16 @@
+{
+  "name": "@inflator/core-infra",
+  "private": true,
+  "scripts": {
+    "init-tf:ci": "terraform init -reconfigure -backend-config variables/$ENVIRONMENT-backend-config.tfvars",
+    "init-tf:nonprod": "AWS_PROFILE=james-nonprod terraform init -reconfigure -backend-config variables/nonprod-backend-config.tfvars ",
+    "init-tf:prod": "AWS_PROFILE=james-prod terraform init -reconfigure -backend-config variables/prod-backend-config.tfvars",
+    "deploy-tf:ci": "ENVIRONMENT=${ENVIRONMENT:-development} npm run init-tf:ci && terraform apply",
+    "deploy-tf:nonprod": "npm run init-tf:nonprod && AWS_PROFILE=james-nonprod terraform apply -var-file=variables/nonprod.tfvars",
+    "deploy-tf:prod": "npm run init-tf:prod && AWS_PROFILE=james-prod terraform apply -var-file=variables/prod.tfvars"
+  },
+  "packageManager": "yarn@3.2.2",
+  "dependencies": {
+    "terraform": "^1.22.1"
+  }
+}
