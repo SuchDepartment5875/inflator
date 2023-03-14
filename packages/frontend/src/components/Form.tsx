@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Grid,
   Typography,
@@ -12,6 +11,9 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { DateOptions, FormFields } from "../../../../types";
 import { groupBy } from "lodash";
+import { styled } from "@mui/system";
+
+const StyledForm = styled("form")({ marginTop: "auto", marginBottom: "auto" });
 
 const defaultValues = {
   startingYear: 2021,
@@ -58,7 +60,7 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
   ];
 
   return (
-    <form>
+    <StyledForm>
       <Box
         display="flex"
         alignItems="center"
@@ -73,7 +75,41 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
           direction="column"
         >
           <Grid item>
-            <Typography variant="body2">In</Typography>
+            <Typography variant="body2">My income has been</Typography>
+            <Controller
+              name={"startingSalary"}
+              control={control}
+              rules={{
+                pattern: /\d+/,
+                required: true,
+                min: {
+                  value: 1,
+                  message: "Must be greater than 0",
+                },
+              }}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  sx={{ mt: 1 }}
+                  onChange={onChange}
+                  value={value}
+                  required
+                  error={Boolean(errors.startingSalary)}
+                  helperText={errors.startingSalary?.message}
+                  type="number"
+                  inputProps={{
+                    "data-testid": "inputStartSalary",
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">£</InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item>
+            <Typography variant="body2">Since</Typography>
             <Box
               sx={{
                 display: "flex",
@@ -134,74 +170,7 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
               />
             </Box>
           </Grid>
-          <Grid item>
-            <Typography variant="body2">My income was</Typography>
-            <Controller
-              name={"startingSalary"}
-              control={control}
-              rules={{
-                pattern: /\d+/,
-                required: true,
-                min: {
-                  value: 1,
-                  message: "Must be greater than 0",
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextField
-                  sx={{ mt: 1 }}
-                  onChange={onChange}
-                  value={value}
-                  required
-                  error={Boolean(errors.startingSalary)}
-                  helperText={errors.startingSalary?.message}
-                  type="number"
-                  inputProps={{
-                    "data-testid": "inputStartSalary",
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">£</InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </Grid>
-          <Grid item>
-            <Typography variant="body2">My income is now</Typography>
-            <Controller
-              name={"currentSalary"}
-              control={control}
-              rules={{
-                pattern: /\d+/,
-                required: true,
-                min: {
-                  value: 1,
-                  message: "Must be greater than 0",
-                },
-              }}
-              render={({ field: { onChange, value } }) => (
-                <TextField
-                  onChange={onChange}
-                  required
-                  error={Boolean(errors.currentSalary)}
-                  sx={{ mt: 1 }}
-                  value={value}
-                  helperText={errors.currentSalary?.message}
-                  type="number"
-                  inputProps={{
-                    "data-testid": "inputCurrentSalary",
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">£</InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-            />
-          </Grid>
+
           <Grid item>
             {isLoading || false ? (
               <CircularProgress size={"38.5px"} />
@@ -218,6 +187,6 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
           </Grid>
         </Grid>
       </Box>
-    </form>
+    </StyledForm>
   );
 };

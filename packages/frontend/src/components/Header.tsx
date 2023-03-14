@@ -55,23 +55,21 @@ export const Header = () => {
             variant="h6"
             component="h2"
           >
-            Inflator
+            About
           </Typography>
           <Typography sx={{ mt: 2 }}>
-            The rate of inflation in the UK is at the highest it has been in
-            modern times and is causing a cost of living crisis as costs raise
-            faster than incomes do.
+            Recent monthly inflation rates in the UK are the highest they have
+            been in modern times, contributing towards a cost of living crisis,
+            as costs increase faster than incomes do.
           </Typography>
           <Typography sx={{ mt: 2 }}>
             This calculator is designed to show you how your income has changed
-            in real terms since a particular date, and you what income you need
-            to have the same income today in real terms.
+            in real terms since a particular date, and you what income your
+            needs to be today to have the value in real terms.
           </Typography>
           <Typography sx={{ mt: 2 }}>
-            CPI figures provided by the ONS are used to calculate the inflation
-            impact on real terms income.
+            <DataSourceCopy />
           </Typography>
-          <DataSourceCopy sx={{ mt: 2 }} />
         </Box>
       </Modal>
     </AppBar>

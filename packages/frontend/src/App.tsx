@@ -66,14 +66,13 @@ function App() {
     startingYear,
     startingMonth,
     startingSalary,
-    currentSalary,
   }: FormFields) => {
     setIsLoading(true);
     setCalculationResult(undefined);
 
     try {
       const res = await axios.get<CalculateResData>(
-        `${baseUrl}/calculate?startingYear=${startingYear}&startingMonth=${startingMonth}&startingSalary=${startingSalary}&currentSalary=${currentSalary}`
+        `${baseUrl}/calculate?startingYear=${startingYear}&startingMonth=${startingMonth}&startingSalary=${startingSalary}`
       );
 
       if (res.status === 200) {
@@ -103,13 +102,17 @@ function App() {
           >
             <Grid
               container
+              alignItems="center"
               sx={{
                 px: 2,
-                py: 3,
+                py: {
+                  xs: 3,
+                  lg: 5,
+                },
                 textAlign: "center",
               }}
             >
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={5} sx={{}}>
                 <Form
                   isLoading={isLoading}
                   options={options}
@@ -124,7 +127,7 @@ function App() {
                   alignItems: "center",
                   mt: {
                     xs: 2,
-                    sm: 5,
+                    sm: 3,
                     md: "auto",
                   },
                   mb: {

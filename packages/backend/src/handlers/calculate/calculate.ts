@@ -9,13 +9,12 @@ export async function calculateLambda(
     throw new Error("No query parameters provided");
   }
 
-  const { startingSalary, startingYear, startingMonth, currentSalary } =
+  const { startingSalary, startingYear, startingMonth } =
     event.queryStringParameters;
 
   try {
     const parsedParams = calculateParams.parse({
       startingSalary: Number(startingSalary),
-      currentSalary: Number(currentSalary),
       startingYear: Number(startingYear),
       startingMonth: startingMonth,
     });

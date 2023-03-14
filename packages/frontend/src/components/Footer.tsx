@@ -2,6 +2,30 @@ import { colors, Paper, Typography } from "@mui/material";
 import { Box, Container } from "@mui/system";
 import { DataSourceCopy } from "./DataSourceCopy";
 
+export const FooterTypography = ({
+  children,
+}: {
+  children: string | JSX.Element;
+}) => {
+  return (
+    <Box sx={{ textAlign: "center" }}>
+      <Typography
+        variant="caption"
+        sx={{
+          textAlign: "center",
+          fontSize: {
+            xs: 10,
+            sm: 12,
+          },
+          borderRadius: "22px",
+        }}
+      >
+        {children}
+      </Typography>
+    </Box>
+  );
+};
+
 export const Footer = () => {
   return (
     <Paper
@@ -15,15 +39,21 @@ export const Footer = () => {
       component="footer"
       square
     >
-      <Container maxWidth="lg" sx={{ my: 2 }}>
-        <Box sx={{ textAlign: "center" }}>
-          <Typography variant="caption">
-            No personally identifiable information is stored by this service.
-          </Typography>
-        </Box>
-        <Box sx={{ textAlign: "center" }}>
-          <DataSourceCopy variant="caption" />
-        </Box>{" "}
+      <Container
+        maxWidth="lg"
+        sx={{
+          my: {
+            xs: 1,
+            sm: 2,
+          },
+        }}
+      >
+        <FooterTypography>
+          No personally identifiable information is stored by this service.
+        </FooterTypography>
+        <FooterTypography>
+          <DataSourceCopy />
+        </FooterTypography>
       </Container>
     </Paper>
   );

@@ -31,7 +31,6 @@ test("calculateInflationSince", async () => {
     startingMonth: "January",
     startingYear: 1989,
     startingSalary: 1,
-    currentSalary: 2,
     finishingMonth: "March",
     finishingYear: 1989,
   });
@@ -44,7 +43,6 @@ test("calculateInflationSince defaults to latest end date", async () => {
     startingMonth: "January",
     startingYear: 1989,
     startingSalary: 1,
-    currentSalary: 2,
   });
 
   expect(result).toStrictEqual(1.0166350694444446);
@@ -58,7 +56,6 @@ test("calculatePayStats", async () => {
     startingMonth: "January",
     startingYear: 1989,
     startingSalary,
-    currentSalary,
   });
 
   expect(result).toStrictEqual({
@@ -90,7 +87,6 @@ test("calculatePayStats throws if starting date is not found", async () => {
       startingMonth: "January",
       startingYear: 2055,
       startingSalary,
-      currentSalary,
     })
   ).rejects.toThrow("No matching time period found");
 });

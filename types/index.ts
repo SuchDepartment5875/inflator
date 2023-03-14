@@ -86,7 +86,6 @@ export const formFieldsSchema = z.object({
   startingYear: z.number(),
   startingMonth: z.string(),
   startingSalary: z.number(),
-  currentSalary: z.number(),
 });
 
 export type FormFields = z.infer<typeof formFieldsSchema>;
@@ -95,7 +94,6 @@ export const calculateResDataSchema = z.object({
   inflation: z.number(),
   inflatedSalary: z.number(),
   startingSalary: z.number(),
-  currentSalary: z.number(),
   startingTimePeriod: dateOptionSchema,
   realTermsAbsoluteChange: z.number(),
   realTermsPercentagePayChange: z.number(),
@@ -106,7 +104,6 @@ export type CalculateResData = z.infer<typeof calculateResDataSchema>;
 
 export const calculateParams = z.object({
   startingSalary: z.number(),
-  currentSalary: z.number(),
   startingYear: z.number(),
   startingMonth: month,
   finishingYear: z.number().optional(),

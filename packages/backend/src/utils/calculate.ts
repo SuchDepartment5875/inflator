@@ -69,7 +69,6 @@ export async function calculatePayStats({
   startingMonth,
   startingSalary,
   startingYear,
-  currentSalary,
 }: CalculateParams): Promise<CalculateResData> {
   const inflationPeriods = await getInflationPeriods();
 
@@ -77,14 +76,13 @@ export async function calculatePayStats({
     startingMonth,
     startingSalary,
     startingYear,
-    currentSalary,
   }); // in percent (i.e. 1 for 1%)
 
   const inflatedSalary = startingSalary * inflation;
 
-  const realTermsAbsoluteChange = currentSalary - inflatedSalary;
+  const realTermsAbsoluteChange = startingSalary - inflatedSalary;
 
-  const realTermsPercentagePayChange = currentSalary / inflatedSalary;
+  const realTermsPercentagePayChange = startingSalary / inflatedSalary;
 
   const realTermsPercentageDifferent = realTermsPercentagePayChange - 1; // your pay is worth this many percent more or less (if -)
 
@@ -105,7 +103,6 @@ export async function calculatePayStats({
     inflation,
     inflatedSalary,
     startingSalary,
-    currentSalary,
     startingTimePeriod: startingTimePeriodConverted,
     currentDate: null,
     realTermsAbsoluteChange,

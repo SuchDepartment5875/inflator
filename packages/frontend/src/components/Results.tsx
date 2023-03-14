@@ -1,6 +1,5 @@
-import React from "react";
 import Typography from "@mui/material/Typography";
-import { Paper, Grid } from "@mui/material";
+import { Paper, Grid, Box } from "@mui/material";
 import { CalculateResData } from "../../../../types";
 import { styled } from "@mui/system";
 
@@ -28,18 +27,24 @@ const absoluteChangeToColour = (realTermsAbsoluteChange: number) => {
   return "red";
 };
 
-const formatAmount = (
+const formatAmountPercentage = (
   realTermsPercentagePayChange: number,
   realTermsAbsoluteChange: number
 ) => {
   if (realTermsPercentagePayChange === 0 || realTermsAbsoluteChange === 0) {
-    return "";
+    return "0";
   }
 
-  return `${Math.abs((realTermsPercentagePayChange - 1) * 100).toFixed(
-    1
-  )}% / £${Math.abs(realTermsAbsoluteChange).toFixed(2)}`;
+  return `${Math.abs((realTermsPercentagePayChange - 1) * 100).toFixed(1)} `;
 };
+
+function formatAmount2(amount: string | number) {
+  return Number(amount).toLocaleString("en-GB", {
+    useGrouping: true,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+}
 
 const formatInflationPercentage = (inflation: number) =>
   (((inflation || 1) - 1) * 100).toFixed(1);
@@ -52,9 +57,10 @@ const formatSince = (month: string, year: number) => `${month} ${year}`;
 const defaultValues = {
   direction: absoluteChangeToDescripton(-1),
   inflationRatePercentage: formatInflationPercentage(-1),
-  requiredSalary: formatRequiredSalary(1000),
+  requiredSalary: formatRequiredSalary(10000),
   since: formatSince("January", 2021),
-  amount: formatAmount(-1, -1),
+  amountPercentage: formatAmountPercentage(-1, -1),
+  amountAbsolute: formatAmount2(-1),
   colour: absoluteChangeToColour(-1),
 };
 
@@ -73,8 +79,11 @@ export const Result = ({ calculationResult }: IProps) => {
           calculationResult.startingTimePeriod.month,
           calculationResult.startingTimePeriod.year
         ),
-        amount: formatAmount(
+        amountPercentage: formatAmountPercentage(
           calculationResult.realTermsPercentagePayChange,
+          calculationResult.realTermsAbsoluteChange
+        ),
+        amountAbsolute: formatAmount2(
           calculationResult.realTermsAbsoluteChange
         ),
         direction: absoluteChangeToDescripton(
@@ -95,9 +104,10 @@ export const Result = ({ calculationResult }: IProps) => {
       elevation={10}
       sx={{
         p: {
-          xs: 0,
+          xs: 2,
           sm: 3,
         },
+        m: 2,
         borderRadius: "22px",
         width: "100%",
       }}
@@ -119,7 +129,7 @@ export const Result = ({ calculationResult }: IProps) => {
         data-testid={`result-populated-${!!calculationResult}`}
       >
         <Grid data-testid="inflation-rate" item>
-          <Typography>Due to an average inflation rate of</Typography>
+          <Typography>Due to an inflation rate of</Typography>
           <Typography>
             <BlurredBold>
               {formattedResults.inflationRatePercentage}
@@ -131,17 +141,35 @@ export const Result = ({ calculationResult }: IProps) => {
         <Grid data-testid="real-income" item>
           <Typography>Your real terms income has</Typography>
           <Typography>
-            <BlurredBold sx={{ color: formattedResults.colour }}>
-              {formattedResults.direction} {formattedResults.amount}
-            </BlurredBold>
+            <Box
+              sx={{
+                display: "flex",
+                textAlign: "center",
+                margin: "auto",
+                justifyContent: "center",
+              }}
+            >
+              <BlurredBold sx={{ color: formattedResults.colour }}>
+                {formattedResults.direction} {formattedResults.amountPercentage}
+              </BlurredBold>
+              <Typography sx={{ color: formattedResults.colour }}>
+                <b> % / £</b>
+              </Typography>
+              <BlurredBold sx={{ color: formattedResults.colour }}>
+                {formattedResults.amountAbsolute}
+              </BlurredBold>
+            </Box>
           </Typography>
         </Grid>
 
         <Grid data-testid="matched-income" item>
-          <Typography>Your inflation matched income is</Typography>
+          <Typography>To keep up with inflation</Typography>
+          <Typography>your income needs to be</Typography>
           <Typography>
             <b>£</b>
-            <BlurredBold>{formattedResults.requiredSalary}</BlurredBold>
+            <BlurredBold>
+              {formatAmount2(formattedResults.requiredSalary)}
+            </BlurredBold>
           </Typography>
         </Grid>
       </Grid>
