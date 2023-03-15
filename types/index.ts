@@ -83,9 +83,9 @@ export const dateOptionsSchema = z.array(dateOptionSchema);
 export type DateOptions = z.infer<typeof dateOptionsSchema>;
 
 export const formFieldsSchema = z.object({
-  startingYear: z.number(),
+  startingYear: z.string(),
   startingMonth: z.string(),
-  startingSalary: z.number(),
+  startingSalary: z.string(),
 });
 
 export type FormFields = z.infer<typeof formFieldsSchema>;

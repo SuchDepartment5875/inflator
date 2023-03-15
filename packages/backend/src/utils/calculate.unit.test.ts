@@ -50,7 +50,6 @@ test("calculateInflationSince defaults to latest end date", async () => {
 
 test("calculatePayStats", async () => {
   const startingSalary = 1000;
-  const currentSalary = 1010;
 
   const result = await calculatePayStats({
     startingMonth: "January",
@@ -60,12 +59,11 @@ test("calculatePayStats", async () => {
 
   expect(result).toStrictEqual({
     currentDate: null,
-    currentSalary: 1010,
     inflatedSalary: 1016.6350694444446,
     inflation: 1.0166350694444446,
-    realTermsAbsoluteChange: -6.635069444444639,
-    realTermsPercentageDifferent: -0.006526500652855205,
-    realTermsPercentagePayChange: 0.9934734993471448,
+    realTermsAbsoluteChange: -16.63506944444464,
+    realTermsPercentageDifferent: -0.01636287193351993,
+    realTermsPercentagePayChange: 0.9836371280664801,
     startingSalary: 1000,
     startingTimePeriod: {
       cpi: 14.9,
@@ -80,7 +78,6 @@ test("calculatePayStats", async () => {
 
 test("calculatePayStats throws if starting date is not found", async () => {
   const startingSalary = 1000;
-  const currentSalary = 1010;
 
   await expect(
     calculatePayStats({

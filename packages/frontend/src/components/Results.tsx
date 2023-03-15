@@ -1,5 +1,5 @@
 import Typography from "@mui/material/Typography";
-import { Paper, Grid, Box } from "@mui/material";
+import { Paper, Grid } from "@mui/material";
 import { CalculateResData } from "../../../../types";
 import { styled } from "@mui/system";
 
@@ -35,7 +35,7 @@ const formatAmountPercentage = (
     return "0";
   }
 
-  return `${Math.abs((realTermsPercentagePayChange - 1) * 100).toFixed(1)} `;
+  return `${Math.abs((realTermsPercentagePayChange - 1) * 100).toFixed(1)}`;
 };
 
 function formatAmount2(amount: string | number) {
@@ -99,6 +99,8 @@ export const Result = ({ calculationResult }: IProps) => {
     calculationResult ? {} : { filter: "blur(4px)" }
   );
 
+  const UnblurredBold = styled("b")(calculationResult ? {} : {});
+
   return (
     <Paper
       elevation={10}
@@ -141,24 +143,15 @@ export const Result = ({ calculationResult }: IProps) => {
         <Grid data-testid="real-income" item>
           <Typography>Your real terms income has</Typography>
           <Typography>
-            <Box
-              sx={{
-                display: "flex",
-                textAlign: "center",
-                margin: "auto",
-                justifyContent: "center",
-              }}
-            >
-              <BlurredBold sx={{ color: formattedResults.colour }}>
-                {formattedResults.direction} {formattedResults.amountPercentage}
-              </BlurredBold>
-              <Typography sx={{ color: formattedResults.colour }}>
-                <b> % / £</b>
-              </Typography>
-              <BlurredBold sx={{ color: formattedResults.colour }}>
-                {formattedResults.amountAbsolute}
-              </BlurredBold>
-            </Box>
+            <BlurredBold sx={{ color: formattedResults.colour }}>
+              {formattedResults.direction} {formattedResults.amountPercentage}
+            </BlurredBold>
+            <UnblurredBold sx={{ color: formattedResults.colour }}>
+              % / £
+            </UnblurredBold>
+            <BlurredBold sx={{ color: formattedResults.colour }}>
+              {formattedResults.amountAbsolute}
+            </BlurredBold>
           </Typography>
         </Grid>
 

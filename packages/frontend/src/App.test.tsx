@@ -1,4 +1,3 @@
-import React from "react";
 import {
   fireEvent,
   render,
@@ -68,7 +67,6 @@ const mockCalculation = {
 test("when the form is submitted, the results are shown", async () => {
   require("axios").get.mockImplementation((x: any) => {
     const urlPath = x.substr(26).split("?")[0];
-    console.log("🚀 : require : urlPath", urlPath);
 
     switch (urlPath) {
       case "/get-date-options":
@@ -85,7 +83,6 @@ test("when the form is submitted, the results are shown", async () => {
   });
 
   const mockStartSalary = "42";
-  const mockCurrentSalary = "43";
 
   render(<App />);
 
@@ -140,11 +137,6 @@ test("when the form is submitted, the results are shown", async () => {
   const inputStartSalary = screen.getByTestId("inputStartSalary");
   fireEvent.change(inputStartSalary, { target: { value: mockStartSalary } });
 
-  const inputCurrentSalary = screen.getByTestId("inputCurrentSalary");
-  fireEvent.change(inputCurrentSalary, {
-    target: { value: mockCurrentSalary },
-  });
-
   /* Submit the form */
 
   const submitBtn = screen.getByTestId("submit-btn");
@@ -160,20 +152,18 @@ test("when the form is submitted, the results are shown", async () => {
 
   expect(require("axios").get).toHaveBeenNthCalledWith(
     2,
-    `https://api.inflator.co.uk/calculate?startingYear=2020&startingMonth=February&startingSalary=${mockStartSalary}&currentSalary=${mockCurrentSalary}`
+    `https://api.inflator.co.uk/calculate?startingYear=2020&startingMonth=February&startingSalary=${mockStartSalary}`
   );
 
   expect(
     within(resultContainer).getByTestId("inflation-rate")
-  ).toHaveTextContent(
-    "Due to an average inflation rate of12200.0% since March 2021"
-  );
+  ).toHaveTextContent("Due to an inflation rate of12200.0% since March 2021");
   expect(within(resultContainer).getByTestId("real-income")).toHaveTextContent(
-    "Your real terms income hasincreased by 78800.0% / £456.00"
+    "Your real terms income hasincreased by 78800.0% / £456"
   );
   expect(
     within(resultContainer).getByTestId("matched-income")
-  ).toHaveTextContent("Your inflation matched income is£1234.00");
+  ).toHaveTextContent("To keep up with inflationyour income needs to be£1,234");
 });
 
 // type values into boxes

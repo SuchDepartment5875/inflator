@@ -1,6 +1,10 @@
 import { AwsRum } from "aws-rum-web";
 
 export const beginAwsRumMonitoring = () => {
+  if (process.env.NODE_ENV === "development") {
+    return;
+  }
+
   try {
     const config = {
       sessionSampleRate: 1,

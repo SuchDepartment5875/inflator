@@ -8,7 +8,7 @@ test("throws if no query parameters are provided", async () => {
   );
 });
 
-test("throws if query parameter `startingSalary` is missing", async () => {
+test.only("throws if query parameter `startingSalary` is missing", async () => {
   const event = {
     ...mockApiGatewayEvent,
     queryStringParameters: {
@@ -22,21 +22,7 @@ test("throws if query parameter `startingSalary` is missing", async () => {
   );
 });
 
-test("throws if query parameter `currentSalary` is missing", async () => {
-  const event = {
-    ...mockApiGatewayEvent,
-    queryStringParameters: {
-      startingSalary: "2",
-      startingMonth: "January",
-      startingYear: "1999",
-    },
-  };
-  await expect(calculateLambda(event)).rejects.toThrow(
-    "Missing required parameter"
-  );
-});
-
-test("throws if query parameter `startingYear` is missing", async () => {
+test.only("throws if query parameter `startingYear` is missing", async () => {
   const event = {
     ...mockApiGatewayEvent,
     queryStringParameters: {

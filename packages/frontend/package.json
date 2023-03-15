@@ -7,7 +7,7 @@
     "build": "echo $ENVIRONMENT && REACT_APP_ENVIRONMENT=${ENVIRONMENT:-development} react-scripts build",
     "deploy": "REACT_APP_AWS_RUM_ID=$AWS_RUM_ID REACT_APP_AWS_RUM_GUEST_ROLE_ARN=$AWS_RUM_GUEST_ROLE_ARN REACT_APP_AWS_RUM_IDENTITY_POOL_ID=$AWS_RUM_IDENTITY_POOL_ID npm run build && aws s3 sync build/ s3://www.$TF_VAR_DOMAIN_NAME",
     "deploy-local": "REACT_APP_AWS_RUM_ID=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/app_monitor_id\" --query Parameter.Value) REACT_APP_AWS_RUM_GUEST_ROLE_ARN=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/guest_role_arn\" --query Parameter.Value) REACT_APP_AWS_RUM_IDENTITY_POOL_ID=$(aws ssm get-parameter --name \"nonprod-inflator.co.uk/rum/identity_pool_id\" --query Parameter.Value) npm run build && AWS_PROFILE=james-prod aws s3 sync build/ s3://$TF_VAR_DOMAIN_NAME",
-    "test": "REACT_APP_ENVIRONMENT=prod react-scripts test",
+    "test": "CI=true REACT_APP_ENVIRONMENT=prod react-scripts test",
     "eject": "react-scripts eject",
     "init-tf:nonprod": "AWS_PROFILE=james-nonprod terraform init -backend-config variables/nonprod-backend-config.tfvars",
     "init-tf:prod": "AWS_PROFILE=james-prod terraform init -backend-config variables/prod-backend-config.tfvars",

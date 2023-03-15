@@ -4,9 +4,9 @@ import {
   Button,
   TextField,
   MenuItem,
-  InputAdornment,
   Box,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { DateOptions, FormFields } from "../../../../types";
@@ -15,9 +15,10 @@ import { styled } from "@mui/system";
 
 const StyledForm = styled("form")({ marginTop: "auto", marginBottom: "auto" });
 
-const defaultValues = {
-  startingYear: 2021,
+const defaultValues: FormFields = {
+  startingYear: "2021",
   startingMonth: "January",
+  startingSalary: "",
 };
 
 const months = [
@@ -56,7 +57,7 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
   const watchStartingMonth = watch("startingMonth");
 
   const optionYears = optionsGroupedByMonthNumber[watchStartingMonth] || [
-    { year: 2021 },
+    { year: "2021" },
   ];
 
   return (
@@ -145,7 +146,6 @@ export const Form = ({ options, isLoading, onSubmit }: IProps) => {
                   </TextField>
                 )}
               />
-
               <Controller
                 name={"startingYear"}
                 control={control}
