@@ -39,7 +39,7 @@ const formatAmountPercentage = (
 };
 
 function formatAmount2(amount: string | number) {
-  return Number(amount).toLocaleString("en-GB", {
+  return Math.abs(Number(amount)).toLocaleString("en-GB", {
     useGrouping: true,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
